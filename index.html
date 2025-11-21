@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>YourOwnShop | Modern Fashion Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJz/f5MNAv8NTSxVvY5F156mQk0r3M8TzI/j8P/pL8Mh8P/l4uP5F5P5/5P5" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="description" content="Shop the latest professional, stylish, and aesthetic trends at YourOwnShop. Filtered views and a working cart demonstrate full e-commerce functionality.">
+
+    <!-- Google tag (gtag.js) kept intact -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z60YCPKGEW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z60YCPKGEW');
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-navy': '#0b163f',
+                        'brand-char': '#0a1226',
+                        'brand-accent': '#c8a27a',
+                        'brand-muted': '#9aa3b2',
+                        'instagram-pink': '#E1306C',
+                        'linkedin-blue': '#0077B5',
+                        'youtube-red': '#FF0000'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+   
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        /* Base */
+        html,body { height: 100%; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #070814;
+            color: #e8eef7;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* Hero overlay */
+        .hero-overlay {
+            background: linear-gradient(90deg, rgba(6,10,21,0.86) 30%, rgba(6,10,21,0.45) 100%);
+        }
+
+        /* Product card */
+        .product-card {
+            background: linear-gradient(180deg, rgba(11,22,63,0.24), rgba(6,8,20,0.28));
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+        }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(2,6,23,0.6); }
+        .product-image { object-fit: cover; width: 100%; height: 260px; }
+
+        /* Cart drawer slide */
+        #cart-drawer {
+            transition: transform 0.28s cubic-bezier(.2,.9,.2,1);
+            transform: translateX(110%);
+        }
+        #cart-drawer.open { transform: translateX(0); }
+
+        /* Chat box behaviour */
+        #chat-box {
+            transition: transform 0.28s cubic-bezier(.2,.9,.2,1), opacity .28s;
+            transform: translateY(120%);
+            opacity: 0;
+        }
+        #chat-box.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Chat visuals (opaque & readable) */
+        #chat-box {
+          background: rgba(15,15,15,0.96);
+          color: #fff;
+          border: 1px solid #333;
+          border-radius: 1rem;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+          backdrop-filter: blur(8px);
+        }
+        .chat-message-ai {
+            background-color: rgba(255,255,255,0.06);
+            color: #f3deb8;
+            border-radius: 12px;
+            padding: 10px 14px;
+            max-width: 80%;
+        }
+        .chat-message-user {
+            background-color: rgba(200,162,122,0.95);
+            color: #071028;
+            border-radius: 12px;
+            padding: 8px 12px;
+            max-width: 75%;
+            align-self: flex-end;
+        }
+        #chat-input-area input {
+            background: #0f1724;
+            color: #e8eef7;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        #chat-input-area button {
+            background: #c8a27a;
+            color: #071028;
+        }
+        #chat-input-area button:hover { background: #d4a373; }
+
+        /* small helpers */
+        .tag-sale {
+            background: rgba(200,162,122,0.12);
+            color: #c8a27a;
+            font-weight: 700;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        /* footer link color */
+        footer a { color: #cbd6e9; }
+
+        /* focus outline */
+        :focus { outline: 3px solid rgba(200,162,122,0.12); outline-offset: 2px; }
+
+        @media (max-width: 768px) {
+            .product-image { height: 200px; }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-transparent backdrop-blur-sm">
+        <div class="container mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
+            <a id="home-logo" href="#" class="flex items-center space-x-3 text-white no-underline">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-navy to-brand-char flex items-center justify-center border border-white/5 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="text-lg font-bold tracking-wide">YourOwnShop</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center space-x-8 text-sm text-slate-200">
+                <a href="#" data-category="all" class="category-link nav-link hover:text-brand-accent transition font-bold" id="link-all">Home</a>
+                <a href="#" data-category="all" class="category-link nav-link hover:text-brand-accent transition">Collections</a>
+                <a href="#" data-category="women" class="category-link nav-link hover:text-brand-accent transition">Women</a>
+                <a href="#" data-category="men" class="category-link nav-link hover:text-brand-accent transition">Men</a>
+            </nav>
+
+            <!-- search + icons -->
+            <div class="relative flex items-center space-x-4">
+                <div id="search-input-container" class="hidden md:block">
+                    <input type="text" id="main-search-input" placeholder="Search products..."
+                        class="w-72 p-2 border border-white/8 rounded-lg text-sm bg-transparent placeholder:text-slate-400 focus:ring-0" 
+                        oninput="handleSearchFilter(this.value)">
+                </div>
+
+                <button id="cart-button" class="p-2 rounded-md hover:bg-white/4 transition relative" aria-label="Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-slate-100"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.63-7.58H5.41"/></svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">0</span>
+                </button>
+
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-white/4 transition" aria-label="Open Menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-slate-100"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <nav id="mobile-menu" class="hidden md:hidden absolute w-full bg-brand-navy/95 py-4 z-30 border-t border-white/3">
+            <div class="container mx-auto px-6 flex flex-col space-y-2">
+                <a href="#" data-category="all" class="category-link block px-4 py-3 text-slate-100">Home</a>
+                <a href="#" data-category="women" class="category-link block px-4 py-3 text-slate-100">Women</a>
+                <a href="#" data-category="men" class="category-link block px-4 py-3 text-slate-100">Men</a>
+                <a href="#" data-category="sale" class="category-link block px-4 py-3 text-rose-400 font-bold">SALE</a>
+            </div>
+        </nav>
+
+
+        <div class="fixed top-16 left-0 w-full backdrop-blur-sm shadow-md z-20 py-2 border-b">
+        <div class="flex justify-center space-x-8 max-w-7xl mx-auto px-4">
+            <span class="text-lg font-semibold text-gray-700">Follow us:</span>
+            <!-- Instagram Icon: text-3xl for size, text-instagram-pink for color -->
+            <a href="https://www.instagram.com/abhishekdas_musicc/" target="_blank" rel="noopener noreferrer" class="text-instagram-pink hover:opacity-80 transition duration-300 transform hover:scale-110" aria-label="Follow us on Instagram">
+                <i class="fab fa-instagram text-3xl"></i>
+            </a>
+            <!-- LinkedIn Icon: text-3xl for size, text-linkedin-blue for color -->
+            <a href="https://www.linkedin.com/in/abhishek-das-468b60289/" target="_blank" rel="noopener noreferrer" class="text-linkedin-blue hover:opacity-80 transition duration-300 transform hover:scale-110" aria-label="Connect with us on LinkedIn">
+                <i class="fab fa-linkedin text-3xl"></i>
+            </a>
+            <!-- YouTube Icon: text-3xl for size, text-youtube-red for color -->
+            <a href="https://youtube.com/@abhishekdasmusicc?si=CZNl21trzRk_pjeN" target="_blank" rel="noopener noreferrer" class="text-youtube-red hover:opacity-80 transition duration-300 transform hover:scale-110" aria-label="Subscribe to our YouTube channel">
+                <i class="fab fa-youtube text-3xl"></i>
+            </a>
+        </div>
+    </div>
+    </header>
+
+    <!-- Main -->
+    <main id="main-content" class="container mx-auto px-6 lg:px-12 py-10">
+        <!-- Hero -->
+        <section id="hero-section" class="mb-12 relative rounded-2xl overflow-hidden shadow-2xl">
+            <div class="relative h-[62vh] lg:h-[70vh] w-full">
+                <img src="image.jpg" alt="Fashion hero" class="absolute inset-0 w-full h-full object-cover brightness-75">
+                <div class="absolute inset-0 hero-overlay"></div>
+
+                <div class="absolute inset-0 flex items-center">
+                    <div class="max-w-3xl px-8 lg:px-16">
+                        <h1 class="text-5xl md:text-7xl font-extrabold leading-tight text-white uppercase tracking-wide">
+                            Style That Defines You
+                        </h1>
+                        <p class="mt-6 text-lg text-slate-200 max-w-xl">
+                            Discover the season’s curated collection — modern essentials for men and women. Elevated everyday pieces with timeless silhouettes.
+                        </p>
+                        <div class="mt-8 flex items-center space-x-4">
+                            <a href="#" data-category="all" class="inline-flex items-center px-6 py-3 bg-brand-accent text-brand-navy rounded-full shadow hover:scale-[1.02] transition">
+                                Shop Now
+                            </a>
+                            <a href="#product-section" class="inline-flex items-center px-5 py-3 border border-white/10 rounded-full hover:bg-white/3 transition">
+                                Browse Collection
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products -->
+        <section id="product-section" class="mb-14">
+            <h2 id="section-title" class="text-3xl font-bold text-slate-100 mb-6 border-b border-white/6 pb-4">
+                🌟 New Arrivals (All Products)
+            </h2>
+
+            <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- JS injects product cards here -->
+            </div>
+        </section>
+
+        <!-- About -->
+        <section class="mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-transparent">
+                <div class="px-4 lg:px-0">
+                    <h3 class="text-3xl font-bold text-slate-100 mb-4">Our Story</h3>
+                    <h4 class="text-lg font-semibold text-brand-accent mb-4">Crafted With Care</h4>
+                    <p class="text-slate-300 leading-relaxed max-w-xl">
+                        YourOwnShop curates thoughtfully designed apparel for the modern wardrobe. We blend timeless tailoring with seasonal trends, focusing on quality materials and ethical sourcing. Discover versatile pieces made to last.
+                    </p>
+                    <div class="mt-8">
+                        <button class="px-6 py-3 rounded-md border border-white/10 hover:bg-white/6 transition">Learn More</button>
+                    </div>
+                </div>
+                <div class="w-full h-96 rounded-xl overflow-hidden flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9b44729a212c4d3d7e2a2da8e39b5b22" alt="About image" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed right-0 top-0 h-full max-w-md w-full bg-brand-char/95 backdrop-blur-md z-50 shadow-2xl flex flex-col transform translate-x-full">
+        <div class="p-4 bg-gradient-to-r from-brand-navy to-brand-char text-white flex justify-between items-center">
+            <h3 class="text-xl font-bold">Shopping Cart</h3>
+            <button id="close-cart" class="text-white p-1 rounded-full hover:bg-white/6 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+
+        <div id="cart-items" class="flex-grow p-4 overflow-y-auto space-y-4">
+            <p id="empty-cart-message" class="text-center text-slate-400 mt-10"></p>
+        </div>
+
+        <div class="p-4 border-t border-white/6">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-lg font-semibold">Subtotal:</span>
+                <span id="cart-total" class="text-2xl font-bold text-brand-accent">₹0</span>
+            </div>
+            <button id="checkout-button" class="w-full py-3 rounded-md bg-brand-accent text-brand-navy font-bold disabled:opacity-50" disabled>Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Chat Pill -->
+    <button id="chat-button" class="chat-pill fixed bottom-6 right-6 z-40 flex items-center space-x-3 bg-brand-accent text-brand-navy p-4 rounded-full shadow-xl hover:scale-105 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
+        <span class="font-medium">Chat</span>
+    </button>
+
+    <!-- Chat Box -->
+    <div id="chat-box" class="chat-box fixed bottom-0 right-0 w-full sm:w-96 h-96 rounded-t-xl shadow-2xl z-40 flex flex-col border-t-4 border-brand-accent" aria-hidden="true">
+        <div class="p-4 bg-brand-navy text-white flex justify-between items-center rounded-t-lg">
+            <span class="font-bold">YourOwnShop AI Assistant</span>
+            <button id="close-chat" class="text-white hover:text-gray-300 transition duration-150 p-1 rounded-full hover:bg-white/6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+
+        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-transparent">
+            <!-- messages appended here -->
+        </div>
+
+        <div id="chat-input-area" class="p-4 border-t border-white/6">
+            <!-- input area rendered by JS -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-slate-200">
+        <div class="container mx-auto px-6 lg:px-12 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-brand-accent">YourOwnShop</h4>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="about">About</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="careers">Careers</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="affiliates">Affiliates</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="returns">Returns Policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="delivery">Delivery & Shipping</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="size">Size Guide</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="faq">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="terms">Terms & Conditions</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="privacy">Privacy Policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition duration-150" data-page="cookies">Cookie Settings</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4 mb-6">
+                        <a href="https://www.instagram.com/abhishekdas_musicc/" target="_blank" aria-label="Instagram" class="text-slate-300 hover:text-brand-accent transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.5" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://youtube.com/@abhishekdasmusicc?si=CZNl21trzRk_pjeN" target="_blank" aria-label="YouTube" class="text-slate-300 hover:text-brand-accent transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17.5V6.5A2.5 2.5 0 0 1 5 4h14a2.5 2.5 0 0 1 2.5 2.5v11A2.5 2.5 0 0 1 19 20H5a2.5 2.5 0 0 1-2.5-2.5z"/><polygon points="10 9 16 12 10 15 10 9"/></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/in/abhishek-das-468b60289/" target="_blank" aria-label="LinkedIn" class="text-slate-300 hover:text-brand-accent transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/6 mt-8 pt-6 text-center text-sm text-slate-400">
+                <p>&copy; <span id="year"></span> YourOwnShop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Message Box -->
+    <div id="message-box" class="fixed inset-0 bg-black bg-opacity-60 z-[100] hidden items-center justify-center p-4" onclick="this.classList.add('hidden')">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform transition duration-300 scale-100" onclick="event.stopPropagation()">
+            <h4 id="message-title" class="text-xl font-bold mb-3 text-brand-navy"></h4>
+            <p id="message-content" class="text-gray-700 mb-4"></p>
+            <button onclick="document.getElementById('message-box').classList.add('hidden')" class="w-full bg-brand-accent text-brand-navy py-2 rounded-lg">Close</button>
+        </div>
+    </div>
+
+    
+    <!-- JavaScript (Complete functionality preserved + fixes) -->
+    <script>
+        // --- Globals ---
+        const PHP_SCRIPT_PATH = 'send_mail.php'; // Placeholder path for email submission
+
+        // Master product list (unchanged)
+        const PRODUCTS = [
+            { id: 1, name: "Oversized Denim Jacket", price: 1999, category: "women", isSale: true, image: "https://m.media-amazon.com/images/I/8144unSMqhL._AC_UY1100_.jpg", description: "The essential jacket for every wardrobe. Oversized fit, premium dark wash denim. Perfect for layering." },
+            { id: 2, name: "Classic Cotton Tee", price: 899, category: "men", isSale: false, image: "https://nobero.com/cdn/shop/files/white_855177b5-5621-4a4b-a0d1-9060b89a6a69.jpg?v=1711979035", description: "Soft, breathable cotton in an essential beige. A core piece for casual style." },
+            { id: 3, name: "Floral Midi Dress", price: 759, category: "women", isSale: false, image: "https://m.media-amazon.com/images/I/710GmqKxl6L._AC_UY1100_.jpg", description: "Flowy, elegant midi dress with a warm floral print. Ideal for summer and resort wear." },
+            { id: 4, name: "Slim Fit Trousers", price: 1200, category: "men", isSale: true, image: "https://www.westside.com/cdn/shop/products/300885484MDGREY_2.jpg?v=1642457420&width=1445", description: "Structured slim-fit trousers in charcoal grey. Professional look with comfortable stretch." },
+            { id: 5, name: "Wool Blend Sweater", price: 2999, category: "women", isSale: false, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUzI_0r_BGYdUvIcCps2tMvtdkgchO9RqIyg&s", description: "Chunky knit sweater made from a warm wool blend. Perfect for cold weather style." },
+            { id: 6, name: "Relaxed Fit Shirt", price: 1500, category: "men", isSale: true, image: "https://image.hm.com/assets/hm/4f/e1/4fe163b84c812659fe47b5177d8bca8551be4c39.jpg?imwidth=2160", description: "Mint green linen shirt for a breezy, relaxed look. Great for smart-casual occasions." },
+            { id: 7, name: "Pleated High-Waist Skirt", price: 999, category: "women", isSale: false, image: "https://littleboxindia.com/cdn/shop/products/Summer_High_Waist_A-Line_Pleated_Skirt_In_Chocolate_Brown_Without_Belt.jpg?v=1742363015", description: "An elegant, flowy pleated midi skirt. Versatile for office or evening wear." },
+            { id: 8, name: "Premium Leather Backpack", price: 4999, category: "men", isSale: false, image: "https://5.imimg.com/data5/SELLER/Default/2024/12/476013265/CK/NF/HS/36858104/premium-leather-backpack.png", description: "High-quality black leather commuter backpack. Durable and stylish for daily use." }
+        ];
+
+        let cart = [];
+        let currentFilter = 'all';
+
+        // --- Utilities ---
+        const formatCurrency = (amount) => `₹${amount.toLocaleString('en-IN')}`;
+
+        const showMessage = (title, content) => {
+            document.getElementById('message-title').textContent = title;
+            document.getElementById('message-content').innerHTML = content;
+            const box = document.getElementById('message-box');
+            box.classList.remove('hidden');
+            box.classList.add('flex');
+        };
+
+        const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // --- Product rendering ---
+        const renderProducts = (productsToDisplay) => {
+            const grid = document.getElementById('product-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            if (!productsToDisplay || productsToDisplay.length === 0) {
+                grid.innerHTML = `<p class="col-span-4 text-center text-xl text-slate-400 py-10">No products found for this category or search.</p>`;
+                return;
+            }
+
+            productsToDisplay.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card rounded-xl overflow-hidden group transform transition duration-300';
+                card.setAttribute('data-product-id', product.id);
+
+                card.innerHTML = `
+                    <div class="relative overflow-hidden">
+                        <img src="${product.image}" alt="${product.name}" class="product-image group-hover:scale-105 transition duration-500">
+                        ${product.isSale ? `<div class="absolute top-3 left-3 tag-sale">SALE</div>` : ''}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-slate-100 truncate">${product.name}</h3>
+                        <p class="text-sm text-slate-400">${product.category === 'women' ? "Women's Collection" : "Men's Style"}</p>
+                        <div class="mt-3 flex items-center justify-between">
+                            <p class="text-xl font-bold text-brand-accent">${formatCurrency(product.price)}</p>
+                            <button data-id="${product.id}" data-action="add-to-cart" class="ml-4 bg-transparent hover:bg-brand-accent hover:text-brand-navy text-slate-100 border border-white/8 px-4 py-2 rounded-md text-sm transition">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        // --- Filtering and search ---
+        const filterProducts = (category) => {
+            currentFilter = category;
+            const titleElement = document.getElementById('section-title');
+
+            document.querySelectorAll('.category-link').forEach(link => {
+                link.classList.remove('font-bold', 'text-brand-accent');
+                link.classList.add('text-slate-200');
+                if (link.dataset.category === category) {
+                    link.classList.add('font-bold', 'text-brand-accent');
+                    link.classList.remove('text-slate-200');
+                }
+            });
+
+            if (category === 'all') {
+                const allLink = document.getElementById('link-all');
+                if (allLink) {
+                    allLink.classList.add('font-bold', 'text-brand-accent');
+                    allLink.classList.remove('text-slate-200');
+                }
+            }
+
+            let filtered = PRODUCTS.slice();
+            let titleText = "🌟 New Arrivals (All Products)";
+
+            if (category === 'women') {
+                filtered = PRODUCTS.filter(p => p.category === 'women');
+                titleText = "👗 Women's Collection";
+            } else if (category === 'men') {
+                filtered = PRODUCTS.filter(p => p.category === 'men');
+                titleText = "👔 Men's Style";
+            } else if (category === 'sale') {
+                filtered = PRODUCTS.filter(p => p.isSale);
+                titleText = "🔥 SALE Items (Up to 50% Off)";
+            }
+
+            if (titleElement) titleElement.textContent = titleText;
+
+            // Ensure the main shopping view is displayed
+            const hero = document.getElementById('hero-section');
+            const productSection = document.getElementById('product-section');
+            if (hero) hero.classList.remove('hidden');
+            if (productSection) productSection.classList.remove('hidden');
+
+            // If product-grid is missing (e.g., we were on an info page), rebuild the main sections
+            const mainContent = document.getElementById('main-content');
+            if (!document.getElementById('product-grid') && mainContent) {
+                mainContent.innerHTML = `
+                    <section id="hero-section" class="mb-12 relative rounded-2xl overflow-hidden shadow-2xl">
+                        <div class="relative h-[62vh] lg:h-[70vh] w-full">
+                            <img src="https://images.unsplash.com/photo-1520975913244-e3de4b86c7e1?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&s=117d0f2dbd3fb22e7c64b6c2b9d2b9be" alt="Fashion hero" class="absolute inset-0 w-full h-full object-cover brightness-75">
+                            <div class="absolute inset-0 hero-overlay"></div>
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="max-w-3xl px-8 lg:px-16">
+                                    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight text-white uppercase tracking-wide">Style That Defines You</h1>
+                                    <p class="mt-6 text-lg text-slate-200 max-w-xl">Discover the season’s curated collection — modern essentials for men and women. Elevated everyday pieces with timeless silhouettes.</p>
+                                    <div class="mt-8 flex items-center space-x-4">
+                                        <a href="#" data-category="all" class="inline-flex items-center px-6 py-3 bg-brand-accent text-brand-navy rounded-full shadow hover:scale-[1.02] transition">Shop Now</a>
+                                        <a href="#product-section" class="inline-flex items-center px-5 py-3 border border-white/10 rounded-full hover:bg-white/3 transition">Browse Collection</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="product-section" class="mb-14">
+                        <h2 id="section-title" class="text-3xl font-bold text-slate-100 mb-6 border-b border-white/6 pb-4"></h2>
+                        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                    </section>
+                `;
+                // reattach listeners
+                attachNavListeners();
+                attachProductGridListener();
+                // set title
+                const newTitle = document.getElementById('section-title');
+                if (newTitle) newTitle.textContent = titleText;
+            }
+
+            renderProducts(filtered);
+            scrollToTop();
+        };
+
+        const handleSearchFilter = (searchTerm) => {
+            const query = (searchTerm || '').toLowerCase().trim();
+            const productsToShow = PRODUCTS.filter(product =>
+                product.name.toLowerCase().includes(query) ||
+                product.description.toLowerCase().includes(query) ||
+                product.category.toLowerCase().includes(query)
+            );
+            const t = document.getElementById('section-title');
+            if (t) t.textContent = `🔍 Search Results for: "${searchTerm}"`;
+            const hero = document.getElementById('hero-section');
+            if (hero) hero.classList.add('hidden');
+            renderProducts(productsToShow);
+        };
+
+        // --- Info pages (render) ---
+        const renderInfoPage = (pageKey) => {
+            const mainContent = document.getElementById('main-content');
+
+            const pageContent = {
+                about: {
+                    title: "About YourOwnShop",
+                    text: `Founded recently, our mission is to deliver high-quality, aesthetic, and professional apparel directly to your door. We blend timeless style with modern digital convenience. We are dedicated to ethical sourcing and sustainable fashion practices.`
+                },
+                careers: {
+                    title: "Careers & Join Our Team",
+                    text: `We are always looking for passionate and creative individuals to join us. Current open roles include: Digital Marketing Specialist, E-commerce Manager, and Fashion Buyer. Send your CV and cover letter to careers@yourownshop.com.`
+                },
+                affiliates: {
+                    title: "Affiliate Program",
+                    text: `Partner with us and earn commission on every sale you refer. Join our affiliate network today to start monetizing your content and audience. High commission rates and dedicated support are provided.`
+                },
+                contact: {
+                    title: "Contact Us",
+                    text: `You can reach our customer service team via our AI assistant (bottom right) or by emailing support@yourownshop.com. Our physical office is located at [Simulated Address].`
+                },
+                returns: {
+                    title: "Returns Policy",
+                    text: `We offer a 30-day no-questions-asked return policy. Items must be unworn, unwashed, and have the original tags attached. Refunds are processed within 5-7 business days after we receive the item.`
+                },
+                delivery: {
+                    title: "Delivery & Shipping",
+                    text: `We provide standard shipping (5-7 days) and express shipping (2-3 days) across India. Orders over ₹5,000 qualify for free standard shipping. Tracking information is sent immediately upon dispatch.`
+                },
+                size: {
+                    title: "Size Guide",
+                    text: `Our sizing generally follows standard Indian and European measurements. Please consult the specific size chart link found on each product page for detailed shoulder, chest, and waist measurements.`
+                },
+                faq: {
+                    title: "Frequently Asked Questions (FAQ)",
+                    text: `**Q: Do you offer international shipping?** A: Currently, we only ship within India. **Q: How do I change my order?** A: Please contact support immediately after placing your order to make changes.`
+                },
+                terms: {
+                    title: "Terms & Conditions",
+                    text: `By using this website, you agree to comply with and be bound by the following terms and conditions of use. All content is for general information only and is subject to change without notice.`
+                },
+                privacy: {
+                    title: "Privacy Policy",
+                    text: `We are committed to protecting your privacy. We use cookies and collect data only to improve your shopping experience and process your orders securely. We do not sell your personal information.`
+                },
+                cookies: {
+                    title: "Cookie Settings",
+                    text: `We use essential cookies to operate the site (like the shopping cart). You can manage your preferences for non-essential tracking and advertising cookies here (simulated setting panel).`
+                }
+            };
+
+            const content = pageContent[pageKey] || { title: "Page Not Found", text: "The requested page is not available." };
+
+            if (!mainContent) return;
+
+            mainContent.innerHTML = `
+                <section class="min-h-[50vh] bg-transparent p-8 md:p-12 rounded-2xl">
+                    <h1 class="text-4xl font-bold text-slate-100 mb-6 border-b border-white/6 pb-3">${content.title}</h1>
+                    <div class="text-lg text-slate-300 leading-relaxed space-y-4">
+                        <p>${content.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+                        <p class="mt-8 text-sm text-slate-400">(This is a simulated page. In a full e-commerce system, this content would be loaded from a new HTML page or a CMS.)</p>
+                    </div>
+                    <button class="back-to-shop-btn mt-8 inline-block bg-brand-navy text-brand-accent py-3 px-6 rounded-lg font-medium hover:opacity-90 transition duration-300">
+                        ← Back to Shop
+                    </button>
+                </section>
+            `;
+
+            // Hide hero and product sections (they are replaced)
+            const hero = document.getElementById('hero-section');
+            const productSection = document.getElementById('product-section');
+            if (hero) hero.classList.add('hidden');
+            if (productSection) productSection.classList.add('hidden');
+
+            scrollToTop();
+        };
+
+        // --- Cart management ---
+        const updateCartUI = () => {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCountElement = document.getElementById('cart-count');
+            const cartTotalElement = document.getElementById('cart-total');
+            const checkoutButton = document.getElementById('checkout-button');
+
+            if (!cartItemsContainer) return;
+
+            if (cartItemsContainer.children.length > 1 || cart.length > 0) {
+                cartItemsContainer.innerHTML = `<p id="empty-cart-message" class="text-center text-slate-400 mt-10"></p>`;
+            } else if (cartItemsContainer.children.length === 0) {
+                cartItemsContainer.innerHTML = `<p id="empty-cart-message" class="text-center text-slate-400 mt-10"></p>`;
+            }
+
+            const emptyMessage = document.getElementById('empty-cart-message');
+
+            let totalItems = 0;
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                if (emptyMessage) {
+                    emptyMessage.textContent = 'Your cart is currently empty.';
+                    emptyMessage.classList.remove('hidden');
+                }
+                if (cartTotalElement) cartTotalElement.textContent = formatCurrency(0);
+                if (cartCountElement) cartCountElement.textContent = 0;
+                if (checkoutButton) checkoutButton.disabled = true;
+                return;
+            }
+
+            if (emptyMessage) {
+                emptyMessage.textContent = '';
+                emptyMessage.classList.add('hidden');
+            }
+            if (checkoutButton) checkoutButton.disabled = false;
+
+            cart.forEach(item => {
+                totalItems += item.quantity;
+                subtotal += item.price * item.quantity;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('flex', 'space-x-4', 'items-center', 'border-b', 'pb-4', 'last:border-b-0');
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+                    <div class="flex-grow">
+                        <p class="font-semibold text-slate-100 truncate">${item.name}</p>
+                        <p class="text-sm text-slate-400">${formatCurrency(item.price)}</p>
+                        <p class="font-bold text-brand-accent">${formatCurrency(item.price * item.quantity)}</p>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <button onclick="handleQuantityChange(${item.id}, 'decrease')" class="p-1 border rounded-full text-slate-300 hover:bg-white/6 transition duration-150" aria-label="Decrease quantity">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                        </button>
+                        <span class="text-sm font-medium w-4 text-center">${item.quantity}</span>
+                        <button onclick="handleQuantityChange(${item.id}, 'increase')" class="p-1 border rounded-full text-slate-300 hover:bg-white/6 transition duration-150" aria-label="Increase quantity">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        </button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(itemDiv);
+            });
+
+            if (cartTotalElement) cartTotalElement.textContent = formatCurrency(subtotal);
+            if (cartCountElement) cartCountElement.textContent = totalItems;
+        };
+
+        const handleAddToCart = (productId) => {
+            const id = parseInt(productId, 10);
+            if (isNaN(id)) {
+                console.error("Invalid Product ID:", productId);
+                showMessage("Error", "Could not identify the product. Please refresh.");
+                return;
+            }
+            const product = PRODUCTS.find(p => p.id === id);
+            if (!product) {
+                console.error("Product not found for id", id);
+                showMessage("Error", "Product details are missing. Please try again.");
+                return;
+            }
+
+            const existing = cart.find(i => i.id === product.id);
+            if (existing) existing.quantity += 1;
+            else cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image });
+
+            updateCartUI();
+            showMessage("Added to Cart", `**${product.name}** has been successfully added to your cart.`);
+            const drawer = document.getElementById('cart-drawer');
+            if (drawer) drawer.classList.add('open');
+        };
+
+        const handleQuantityChange = (id, action) => {
+            const idx = cart.findIndex(i => i.id === id);
+            if (idx > -1) {
+                if (action === 'increase') cart[idx].quantity++;
+                else if (action === 'decrease') {
+                    cart[idx].quantity--;
+                    if (cart[idx].quantity <= 0) cart.splice(idx,1);
+                }
+                updateCartUI();
+            }
+        };
+
+        const handleCheckout = () => {
+            if (cart.length === 0) {
+                showMessage("Checkout Failed", "Your cart is empty. Please add items to proceed.");
+                return;
+            }
+            const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+            showMessage("Payment & Order Confirmation", `The total payment of **${formatCurrency(total)}** has been successfully processed. Your order is confirmed and tracking information will be sent to your email shortly. This is a simulated checkout.`);
+            cart = [];
+            updateCartUI();
+            const drawer = document.getElementById('cart-drawer');
+            if (drawer) drawer.classList.remove('open');
+        };
+
+        // --- Event attachment helpers ---
+        const attachNavListeners = () => {
+            document.querySelectorAll('.category-link').forEach(link => {
+                link.removeEventListener('click', navClickHandler);
+                link.addEventListener('click', navClickHandler);
+            });
+        };
+        function navClickHandler(e) {
+            e.preventDefault();
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('hidden');
+            const cat = e.currentTarget.dataset.category || 'all';
+            filterProducts(cat);
+        }
+
+        const attachProductGridListener = () => {
+            const productGrid = document.getElementById('product-grid');
+            if (!productGrid) return;
+            productGrid.removeEventListener('click', handleProductGridClick);
+            productGrid.addEventListener('click', handleProductGridClick);
+        };
+        function handleProductGridClick(e) {
+            const button = e.target.closest('[data-action="add-to-cart"]');
+            if (button) {
+                const productId = button.getAttribute('data-id');
+                handleAddToCart(productId);
+            }
+        }
+
+        // --- Chat helpers (preserved) ---
+        function aiMessage(text) {
+          const chatMessages = document.getElementById('chat-messages');
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex justify-start';
+          const inner = document.createElement('div');
+          inner.className = 'chat-message-ai';
+          inner.innerHTML = text;
+          wrapper.appendChild(inner);
+          chatMessages.appendChild(wrapper);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function userMessage(text) {
+          const chatMessages = document.getElementById('chat-messages');
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex justify-end';
+          const inner = document.createElement('div');
+          inner.className = 'chat-message-user';
+          inner.innerText = text;
+          wrapper.appendChild(inner);
+          chatMessages.appendChild(wrapper);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartDrawer = document.getElementById('cart-drawer');
+            const cartButton = document.getElementById('cart-button');
+            const closeCartButton = document.getElementById('close-cart');
+            const checkoutButton = document.getElementById('checkout-button');
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            const chatBox = document.getElementById('chat-box');
+            const chatButton = document.getElementById('chat-button');
+            const closeChatButton = document.getElementById('close-chat');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatInputArea = document.getElementById('chat-input-area');
+
+            // set footer year
+            const yearEl = document.getElementById('year');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            // initial attach
+            attachNavListeners();
+            attachProductGridListener();
+            filterProducts('all');
+
+            // logo -> homepage
+            const homeLogo = document.getElementById('home-logo');
+            if (homeLogo) {
+                homeLogo.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    filterProducts('all');
+                    const s = document.getElementById('main-search-input');
+                    if (s) s.value = '';
+                });
+            }
+
+            // footer links -> info pages
+            document.querySelectorAll('.footer-link').forEach(link => {
+                link.removeEventListener('click', footerClickHandler);
+                link.addEventListener('click', footerClickHandler);
+            });
+            function footerClickHandler(e) {
+                e.preventDefault();
+                const page = e.currentTarget.dataset.page;
+                const s = document.getElementById('main-search-input');
+                if (s) s.value = '';
+                renderInfoPage(page);
+            }
+
+            // Cart drawer logic
+            if (cartButton) cartButton.addEventListener('click', () => cartDrawer.classList.toggle('open'));
+            if (closeCartButton) closeCartButton.addEventListener('click', () => cartDrawer.classList.remove('open'));
+            if (checkoutButton) checkoutButton.addEventListener('click', handleCheckout);
+
+            // Mobile menu toggle
+            if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+            // initialize cart UI
+            updateCartUI();
+
+            // Chatbot logic
+            let chatStep = 0;
+
+            const renderChatInputArea = () => {
+                chatInputArea.innerHTML = '';
+                if (chatStep === 0) {
+                    chatInputArea.innerHTML = `
+                        <div class="flex space-x-2">
+                            <input type="text" id="user-query" placeholder="Ask your question..." class="flex-grow p-2 border border-white/8 rounded-lg focus:ring-0 bg-transparent text-slate-100">
+                            <button id="send-query" class="bg-brand-accent text-brand-navy p-2 rounded-lg">Send</button>
+                        </div>
+                    `;
+                    document.getElementById('send-query').addEventListener('click', handleQuerySubmission);
+                    document.getElementById('user-query').addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') handleQuerySubmission();
+                    });
+                } else if (chatStep === 1) {
+                    aiMessage("Please provide your email address below so we can send the follow-up confirmation.");
+                    chatInputArea.innerHTML = `
+                        <div class="flex space-x-2">
+                            <input type="email" id="user-email" placeholder="Enter your email address..." class="flex-grow p-2 border border-white/8 rounded-lg focus:ring-0 bg-transparent text-slate-100">
+                            <button id="send-email" class="bg-brand-accent text-brand-navy p-2 rounded-lg">Submit</button>
+                        </div>
+                    `;
+                    document.getElementById('send-email').addEventListener('click', handleEmailSubmission);
+                    document.getElementById('user-email').addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') handleEmailSubmission();
+                    });
+                } else {
+                    chatInputArea.innerHTML = `<p class="text-sm text-center text-slate-400">Conversation noted. Please close the chat.</p>`;
+                }
+            };
+
+            const handleQuerySubmission = () => {
+                const queryInput = document.getElementById('user-query');
+                const query = queryInput.value.trim();
+                if (query) {
+                    userMessage(query);
+                    queryInput.value = '';
+                    setTimeout(() => {
+                        aiMessage("Thankyou for using YourOwnShop, your query has been noted.");
+                        chatStep = 1;
+                        renderChatInputArea();
+                    }, 500);
+                } else {
+                    queryInput.placeholder = "Please enter a query...";
+                }
+            };
+
+            const handleEmailSubmission = async () => {
+                const emailInput = document.getElementById('user-email');
+                const email = emailInput.value.trim();
+                if (email && email.includes('@') && email.includes('.')) {
+                    userMessage(email);
+                    aiMessage("Processing request and sending confirmation email...");
+                    try {
+                        // NOTE: This fetch call is for demonstration and will fail without a running PHP server.
+                        const response = await fetch(PHP_SCRIPT_PATH, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ email: email, query: "User Query from Chat" })
+                        });
+                        let confirmationText = `Success! The confirmation mail has been sent to **${email}** by our automated system. A solution will be provided within 24hrs.`;
+                        aiMessage(confirmationText);
+                        chatStep = 2;
+                        renderChatInputArea();
+                    } catch (error) {
+                        aiMessage(`A connection error occurred with the external mail service. Your query has been noted, and we will follow up with you soon at **${email}**.`);
+                        chatStep = 2;
+                        renderChatInputArea();
+                    }
+                } else {
+                    aiMessage("Please enter a valid email address to proceed.");
+                }
+            };
+
+            chatButton.addEventListener('click', () => {
+                chatBox.classList.add('open');
+                chatBox.setAttribute('aria-hidden', 'false');
+                if (chatStep === 0 && chatMessages.children.length === 0) {
+                    aiMessage("Welcome to YourOwnShop. How may I help you today? Please type your query.");
+                    renderChatInputArea();
+                } else {
+                    renderChatInputArea();
+                }
+            });
+
+            closeChatButton.addEventListener('click', () => {
+                chatBox.classList.remove('open');
+                chatBox.setAttribute('aria-hidden', 'true');
+            });
+
+            // Universal handler for dynamically inserted "Back to Shop" buttons
+            document.addEventListener('click', (e) => {
+                const backBtn = e.target.closest('.back-to-shop-btn');
+                if (backBtn) {
+                    e.preventDefault();
+                    filterProducts('all');
+                    const s = document.getElementById('main-search-input');
+                    if (s) s.value = '';
+                }
+            });
+
+        }); // DOMContentLoaded end
+
+    </script>
+</body>
+</html>
